@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.8"
+    "autoprefixer": "^10.4.8",
+    "babel-plugin-styled-components": "^2.0.7"
   }
 }

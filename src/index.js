@@ -6,13 +6,16 @@ import App from "./App";
 import { theme } from "./utils/constants";
 import { GlobalStyles } from "./styles/GlobalStyles";
 import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <ThemeProvider them={theme}>
+    <ThemeProvider theme={theme}>
       <GlobalStyles></GlobalStyles>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>
 );
