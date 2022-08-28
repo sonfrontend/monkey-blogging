@@ -12,8 +12,10 @@ import { useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../firebase-app/firebase-config";
+import { auth, db } from "../firebase-app/firebase-config";
 import { useNavigate } from "react-router-dom";
+import { addDoc, collection } from "firebase/firestore";
+import AuthenticationPage from "./AuthenticationPage";
 
 const SignUpPageStyles = styled.div`
   min-height: 100vh;
@@ -60,24 +62,32 @@ const SignUpPage = () => {
   });
   const [togglePassword, setTogglePassword] = useState(false);
   const handleSignUp = async (values) => {
-    if (!isValid) return;
-    console.log("values: ", values);
-    // return new Promise((resolve) => {
-    //   setTimeout(() => {
-    //     resolve();
-    //   }, 5000);
-    // });
-    const user = await createUserWithEmailAndPassword(
-      auth,
-      values.email,
-      values.password
-    );
+    if (isValid) {
+      console.log("values: ", values);
+      // return new Promise((resolve) => {
+      //   setTimeout(() => {
+      //     resolve();
+      //   }, 5000);
+      // });
+      const user = await createUserWithEmailAndPassword(
+        auth,
+        values.email,
+        values.password
+      );
 
-    await updateProfile(auth.currentUser, {
-      displayName: values.fullName,
-    });
-    toast.success("Register successfully!!!");
-    navigate("/");
+      await updateProfile(auth.currentUser, {
+        displayName: values.fullName,
+      });
+
+      const colRef = collection(db, "user");
+      await addDoc(colRef, {
+        fullName: values.fullName,
+        email: values.email,
+        password: values.password,
+      });
+      toast.success("Register successfully!!!");
+      navigate("/");
+    }
   };
 
   useEffect(() => {
@@ -91,79 +101,75 @@ const SignUpPage = () => {
   }, [errors]);
 
   return (
-    <SignUpPageStyles>
-      <div className="container">
-        <img srcSet="/logo.png" alt="monkey-blogging" className="logo" />
-        <h1 className="heading">Monkey Blogging</h1>
-        <form
-          action=""
-          className="form"
-          autoComplete="off"
-          onSubmit={handleSubmit(handleSignUp)}
-        >
-          <Field>
-            <Label htmlFor="fullName" className="label">
-              Fullname
-            </Label>
-            <Input
-              name="fullName"
-              type="text"
-              placeholder="Enter your fullname"
-              control={control}
-            ></Input>
-          </Field>
+    <AuthenticationPage>
+      <form
+        action=""
+        className="form"
+        autoComplete="off"
+        onSubmit={handleSubmit(handleSignUp)}
+      >
+        <Field>
+          <Label htmlFor="fullName" className="label">
+            Fullname
+          </Label>
+          <Input
+            name="fullName"
+            type="text"
+            placeholder="Enter your fullname"
+            control={control}
+          ></Input>
+        </Field>
 
-          <Field>
-            <Label htmlFor="email" className="label">
-              Email Address
-            </Label>
-            <Input
-              name="email"
-              type="text"
-              placeholder="Enter your email"
-              control={control}
-            ></Input>
-          </Field>
+        <Field>
+          <Label htmlFor="email" className="label">
+            Email Address
+          </Label>
+          <Input
+            name="email"
+            type="text"
+            placeholder="Enter your email"
+            control={control}
+          ></Input>
+        </Field>
 
-          <Field>
-            <Label htmlFor="password" className="label">
-              Password
-            </Label>
-            <Input
-              name="password"
-              type={togglePassword ? "text" : "password"}
-              placeholder="Enter your password"
-              control={control}
-            >
-              {togglePassword ? (
-                <IconEyeOpen
-                  onClick={() => {
-                    setTogglePassword(false);
-                  }}
-                ></IconEyeOpen>
-              ) : (
-                <IconEyeClose
-                  onClick={() => {
-                    setTogglePassword(true);
-                  }}
-                ></IconEyeClose>
-              )}
-            </Input>
-          </Field>
-          <Button
-            type="submit"
-            style={{
-              maxWidth: 300,
-              margin: "0 auto",
-            }}
-            isLoading={isSubmitting}
-            disabled={isSubmitting}
+        <Field>
+          <Label htmlFor="password" className="label">
+            Password
+          </Label>
+          <Input
+            name="password"
+            type={togglePassword ? "text" : "password"}
+            placeholder="Enter your password"
+            control={control}
           >
-            Sign Up
-          </Button>
-        </form>
-      </div>
-    </SignUpPageStyles>
+            {togglePassword ? (
+              <IconEyeOpen
+                onClick={() => {
+                  setTogglePassword(false);
+                }}
+              ></IconEyeOpen>
+            ) : (
+              <IconEyeClose
+                onClick={() => {
+                  setTogglePassword(true);
+                }}
+              ></IconEyeClose>
+            )}
+          </Input>
+        </Field>
+        <Button
+          type="submit"
+          style={{
+            maxWidth: 300,
+            margin: "0 auto",
+          }}
+          isLoading={isSubmitting}
+          disabled={isSubmitting}
+        >
+          Sign Up
+        </Button>
+      </form>
+    </AuthenticationPage>
   );
 };
 

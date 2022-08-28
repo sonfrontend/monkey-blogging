@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { LoadingSpinner } from "../loading";
+import PropTypes from "prop-types";
 
 const ButtonStyles = styled.button`
   cursor: pointer;
@@ -26,6 +27,14 @@ const ButtonStyles = styled.button`
     pointer-events: none;
   }
 `;
+
+/**
+ * @param {*} onClick Handle click
+ * @requires
+ * @param {string} type  Type of button 'button' | 'submit'
+ * @returns
+ */
+
 const Button = ({
   type = "button",
   onClick = () => {},
@@ -39,6 +48,10 @@ const Button = ({
       {child}
     </ButtonStyles>
   );
+};
+
+Button.prototype = {
+  type: PropTypes.oneOf(["button", "submit"]).isRequired,
 };
 
 export default Button;
