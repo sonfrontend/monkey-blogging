@@ -1,40 +1,20 @@
-import React, { useState } from "react";
-import styled from "styled-components";
+import React from "react";
 import { Input } from "../components/input";
 import { Label } from "../components/label";
 import { useForm } from "react-hook-form";
-import { IconEyeClose, IconEyeOpen } from "../components/icon";
 import { Field } from "../components/field";
 import { Button } from "../components/button";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase-app/firebase-config";
 import { NavLink, useNavigate } from "react-router-dom";
 import { addDoc, collection } from "firebase/firestore";
 import AuthenticationPage from "./AuthenticationPage";
-
-const SignUpPageStyles = styled.div`
-  min-height: 100vh;
-  padding: 40px;
-  .logo {
-    margin: 0 auto 20px;
-  }
-  .heading {
-    text-align: center;
-    color: ${(props) => props.theme.primary};
-    font-weight: bold;
-    margin-bottom: 60px;
-  }
-
-  .form {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-`;
+import InputPasswordToggle from "../components/input/InputPasswordToggle";
 
 const schema = yup.object({
   fullName: yup.string().required("Please enter your fullname"),
@@ -60,7 +40,6 @@ const SignUpPage = () => {
     resolver: yupResolver(schema),
     mode: "onChange",
   });
-  const [togglePassword, setTogglePassword] = useState(false);
   const handleSignUp = async (values) => {
     if (isValid) {
       console.log("values: ", values);
@@ -139,26 +118,7 @@ const SignUpPage = () => {
           <Label htmlFor="password" className="label">
             Password
           </Label>
-          <Input
-            name="password"
-            type={togglePassword ? "text" : "password"}
-            placeholder="Enter your password"
-            control={control}
-          >
-            {togglePassword ? (
-              <IconEyeOpen
-                onClick={() => {
-                  setTogglePassword(false);
-                }}
-              ></IconEyeOpen>
-            ) : (
-              <IconEyeClose
-                onClick={() => {
-                  setTogglePassword(true);
-                }}
-              ></IconEyeClose>
-            )}
-          </Input>
+          <InputPasswordToggle control={control}></InputPasswordToggle>
         </Field>
         <div className="have-account">
           You already have an account? <NavLink to={"/sign-in"}>Login</NavLink>
