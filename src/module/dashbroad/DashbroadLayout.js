@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import styled from "styled-components";
-import DashboardHeader from "./DashboardHeader";
+import DashboardHeader from "./DashbroadHeader";
 import Sidebar from "./Sidebar";
 const DashboardStyles = styled.div`
   max-width: 1600px;
@@ -19,7 +19,6 @@ const DashboardStyles = styled.div`
       grid-template-columns: 300px minmax(0, 1fr);
       padding: 40px 20px;
       gap: 0 40px;
-      align-items: start;
     }
   }
 `;
