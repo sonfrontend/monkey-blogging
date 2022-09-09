@@ -14,12 +14,13 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  deleteObject,
 } from "firebase/storage";
 import ImageUpload from "../../components/image/ImageUpload";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
-  const { control, handleSubmit, watch, setValue } = useForm({
+  const { control, handleSubmit, watch, setValue, getValues } = useForm({
     mode: "onChange",
     defaultValues: {
       title: "",
@@ -76,8 +77,26 @@ const PostAddNew = () => {
   const onSelectImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setValue("image", file);
+    setValue("image_name", file.name);
     handleUploadImage(file);
+  };
+
+  const handleDeleteImage = () => {
+    const storage = getStorage();
+
+    // Create a reference to the file to delete
+    const desertRef = ref(storage, "images/" + getValues("image_name"));
+
+    // Delete the file
+    deleteObject(desertRef)
+      .then(() => {
+        console.log("Remove image successfully");
+        setImage("");
+        setProgress(0);
+      })
+      .catch((error) => {
+        console.log("Can not delete image");
+      });
   };
   return (
     <PostAddNewStyles>
@@ -108,7 +127,8 @@ const PostAddNew = () => {
               onChange={onSelectImage}
               progress={progress}
               image={image}
-              className="h-[200px]"
+              className="h-[250px]"
+              handleDeleteImage={handleDeleteImage}
             ></ImageUpload>
           </Field>
           <Field>
