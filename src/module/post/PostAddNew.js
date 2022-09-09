@@ -9,14 +9,9 @@ import { Field } from "../../components/field";
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
 import { postStatus } from "../../utils/constants";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+
 import ImageUpload from "../../components/image/ImageUpload";
+import useFirebaseImage from "../../hook/useFirebaseImage";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -31,73 +26,15 @@ const PostAddNew = () => {
   });
 
   const watchStatus = watch("status");
-  const watchCategory = watch("category");
+
+  const { image, progress, handleSelectImage, handleDeleteImage } =
+    useFirebaseImage(setValue, getValues);
   const addPostHandler = async (values) => {
     const cloneValues = { ...values };
     cloneValues.slug = slugify(values.slug || values.title);
     cloneValues.status = Number(values.status);
-    handleUploadImage(cloneValues.image);
   };
 
-  const [progress, setProgress] = useState(0);
-  const [image, setImage] = useState("");
-  const handleUploadImage = (file) => {
-    const storage = getStorage();
-    const storageRef = ref(storage, "images/" + file.name);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progressPercent =
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setProgress(progressPercent);
-        switch (snapshot.state) {
-          case "paused":
-            console.log("Upload is paused");
-            break;
-          case "running":
-            console.log("Upload is running");
-            break;
-          default:
-            console.log("Nothing at all");
-        }
-      },
-      (error) => {
-        console.log("Error");
-      },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          setImage(downloadURL);
-        });
-      }
-    );
-  };
-  const onSelectImage = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setValue("image_name", file.name);
-    handleUploadImage(file);
-  };
-
-  const handleDeleteImage = () => {
-    const storage = getStorage();
-
-    // Create a reference to the file to delete
-    const desertRef = ref(storage, "images/" + getValues("image_name"));
-
-    // Delete the file
-    deleteObject(desertRef)
-      .then(() => {
-        console.log("Remove image successfully");
-        setImage("");
-        setProgress(0);
-      })
-      .catch((error) => {
-        console.log("Can not delete image");
-      });
-  };
   return (
     <PostAddNewStyles>
       <h1 className="dashboard-heading">Add new post</h1>
@@ -124,7 +61,7 @@ const PostAddNew = () => {
           <Field>
             <Label>Image</Label>
             <ImageUpload
-              onChange={onSelectImage}
+              onChange={handleSelectImage}
               progress={progress}
               image={image}
               className="h-[250px]"
