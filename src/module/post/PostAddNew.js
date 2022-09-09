@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import styled from "styled-components";
@@ -15,6 +15,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import ImageUpload from "../../components/image/ImageUpload";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -35,9 +36,10 @@ const PostAddNew = () => {
     cloneValues.slug = slugify(values.slug || values.title);
     cloneValues.status = Number(values.status);
     handleUploadImage(cloneValues.image);
-    console.log("values: ", values);
   };
 
+  const [progress, setProgress] = useState(0);
+  const [image, setImage] = useState("");
   const handleUploadImage = (file) => {
     const storage = getStorage();
     const storageRef = ref(storage, "images/" + file.name);
@@ -46,9 +48,9 @@ const PostAddNew = () => {
       "state_changed",
       (snapshot) => {
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress =
+        const progressPercent =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log("Upload is " + progress + "% done");
+        setProgress(progressPercent);
         switch (snapshot.state) {
           case "paused":
             console.log("Upload is paused");
@@ -66,7 +68,7 @@ const PostAddNew = () => {
       () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
+          setImage(downloadURL);
         });
       }
     );
@@ -75,6 +77,7 @@ const PostAddNew = () => {
     const file = e.target.files[0];
     if (!file) return;
     setValue("image", file);
+    handleUploadImage(file);
   };
   return (
     <PostAddNewStyles>
@@ -101,7 +104,12 @@ const PostAddNew = () => {
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>
             <Label>Image</Label>
-            <input type="file" name="image" onChange={onSelectImage} />
+            <ImageUpload
+              onChange={onSelectImage}
+              progress={progress}
+              image={image}
+              className="h-[200px]"
+            ></ImageUpload>
           </Field>
           <Field>
             <Label>Status</Label>
