@@ -6,17 +6,17 @@ const { createContext, useContext, useState, useEffect } = require("react");
 const AuthContext = createContext();
 
 function AuthProvider(props) {
-  const [userInfo, setuserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState({});
 
   const value = {
     userInfo,
-    setuserInfo,
+    setUserInfo,
   };
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       console.log("User: ", user);
-      setuserInfo(user);
+      setUserInfo(user);
     });
   }, []);
   return <AuthContext.Provider {...props} value={value}></AuthContext.Provider>;

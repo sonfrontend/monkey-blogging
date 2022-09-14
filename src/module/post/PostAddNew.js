@@ -9,17 +9,17 @@ import { Field } from "../../components/field";
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
 import { postStatus } from "../../utils/constants";
-
 import ImageUpload from "../../components/image/ImageUpload";
 import useFirebaseImage from "../../hook/useFirebaseImage";
 import { Toggle } from "../../components/toggle";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../firebase-app/firebase-config";
-import { async } from "@firebase/util";
+import { useAuth } from "../../contexts/authContext";
+import { toast } from "react-toastify";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
-  const { control, handleSubmit, watch, setValue, getValues } = useForm({
+  const { control, handleSubmit, watch, setValue, getValues, reset } = useForm({
     mode: "onChange",
     defaultValues: {
       title: "",
@@ -27,21 +27,41 @@ const PostAddNew = () => {
       status: 1,
       categoryId: "",
       hot: false,
+      image: "",
     },
   });
 
   const watchStatus = watch("status");
   const watchHot = watch("hot");
+  const { userInfo } = useAuth();
+
   const { image, progress, handleSelectImage, handleDeleteImage } =
     useFirebaseImage(setValue, getValues);
   const addPostHandler = async (values) => {
     const cloneValues = { ...values };
-    cloneValues.slug = slugify(values.slug || values.title);
+    cloneValues.slug = slugify(values.slug || values.title, { lower: true });
     cloneValues.status = Number(values.status);
     console.log("cloneValues: ", cloneValues);
+    const colRef = collection(db, "posts");
+    await addDoc(colRef, {
+      ...cloneValues,
+      image,
+      userId: userInfo.uid,
+    });
+    toast.success("Creacte new post successfully");
+    reset({
+      title: "",
+      slug: "",
+      status: 1,
+      categoryId: "",
+      hot: false,
+      image: "",
+    });
+    setSelectCategory({});
   };
 
   const [categories, setCategories] = useState([]);
+  const [selectCategory, setSelectCategory] = useState("");
   useEffect(() => {
     async function getData() {
       const conRef = collection(db, "categories");
@@ -60,6 +80,10 @@ const PostAddNew = () => {
     getData();
   }, []);
 
+  const handleClickOption = (item) => {
+    setValue("categoryId", item.id);
+    setSelectCategory(item);
+  };
   return (
     <PostAddNewStyles>
       <h1 className="dashboard-heading">Add new post</h1>
@@ -96,19 +120,26 @@ const PostAddNew = () => {
           <Field>
             <Label>Category</Label>
             <Dropdown>
-              <Dropdown.Select placeholder="Select the category"></Dropdown.Select>
+              <Dropdown.Select
+                placeholder={`${selectCategory.name || "Select the category"}`}
+              ></Dropdown.Select>
               <Dropdown.List>
                 {categories.length > 0 &&
                   categories.map((item) => (
                     <Dropdown.Option
                       key={item.id}
-                      onClick={() => setValue("categoryId", item.id)}
+                      onClick={() => handleClickOption(item)}
                     >
                       {item.name}
                     </Dropdown.Option>
                   ))}
               </Dropdown.List>
             </Dropdown>
+            {selectCategory?.name && (
+              <span className="inline-block p-3 rounded-lg bg-green-50 text-sm text-green-600 font-medium">
+                {selectCategory?.name}
+              </span>
+            )}
           </Field>
           <Field>
             <Label>Status</Label>
