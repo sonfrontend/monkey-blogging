@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import slugify from "slugify";
 import styled from "styled-components";
@@ -13,6 +13,9 @@ import { postStatus } from "../../utils/constants";
 import ImageUpload from "../../components/image/ImageUpload";
 import useFirebaseImage from "../../hook/useFirebaseImage";
 import { Toggle } from "../../components/toggle";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../firebase-app/firebase-config";
+import { async } from "@firebase/util";
 const PostAddNewStyles = styled.div``;
 
 const PostAddNew = () => {
@@ -22,7 +25,7 @@ const PostAddNew = () => {
       title: "",
       slug: "",
       status: 1,
-      category: "",
+      categoryId: "",
       hot: false,
     },
   });
@@ -37,6 +40,25 @@ const PostAddNew = () => {
     cloneValues.status = Number(values.status);
     console.log("cloneValues: ", cloneValues);
   };
+
+  const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    async function getData() {
+      const conRef = collection(db, "categories");
+      const p = query(conRef, where("status", "==", 1));
+      const querySnapshot = await getDocs(p);
+      let result = [];
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        result.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setCategories(result);
+    }
+    getData();
+  }, []);
 
   return (
     <PostAddNewStyles>
@@ -70,6 +92,23 @@ const PostAddNew = () => {
               className="h-[250px]"
               handleDeleteImage={handleDeleteImage}
             ></ImageUpload>
+          </Field>
+          <Field>
+            <Label>Category</Label>
+            <Dropdown>
+              <Dropdown.Select placeholder="Select the category"></Dropdown.Select>
+              <Dropdown.List>
+                {categories.length > 0 &&
+                  categories.map((item) => (
+                    <Dropdown.Option
+                      key={item.id}
+                      onClick={() => setValue("categoryId", item.id)}
+                    >
+                      {item.name}
+                    </Dropdown.Option>
+                  ))}
+              </Dropdown.List>
+            </Dropdown>
           </Field>
           <Field>
             <Label>Status</Label>
