@@ -42,34 +42,49 @@ const PostAddNew = () => {
   const watchHot = watch("hot");
   const { userInfo } = useAuth();
 
-  const { image, progress, handleSelectImage, handleDeleteImage } =
-    useFirebaseImage(setValue, getValues);
-  const addPostHandler = async (values) => {
-    const cloneValues = { ...values };
-    cloneValues.slug = slugify(values.slug || values.title, { lower: true });
-    cloneValues.status = Number(values.status);
-    console.log("cloneValues: ", cloneValues);
-    const colRef = collection(db, "posts");
-    await addDoc(colRef, {
-      ...cloneValues,
-      image,
-      userId: userInfo.uid,
-      createdAt: serverTimestamp,
-    });
-    toast.success("Creacte new post successfully");
-    reset({
-      title: "",
-      slug: "",
-      status: 1,
-      categoryId: "",
-      hot: false,
-      image: "",
-    });
-    setSelectCategory({});
-  };
+  const {
+    image,
+    handleResetImage,
+    progress,
+    handleSelectImage,
+    handleDeleteImage,
+  } = useFirebaseImage(setValue, getValues);
 
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+  const addPostHandler = async (values) => {
+    setLoading(true);
+    try {
+      const cloneValues = { ...values };
+      cloneValues.slug = slugify(values.slug || values.title, { lower: true });
+      cloneValues.status = Number(values.status);
+      console.log("cloneValues: ", cloneValues);
+      const colRef = collection(db, "posts");
+      await addDoc(colRef, {
+        ...cloneValues,
+        image,
+        userId: userInfo.uid,
+        createdAt: serverTimestamp(),
+      });
+      toast.success("Creacte new post successfully");
+      reset({
+        title: "",
+        slug: "",
+        status: 1,
+        categoryId: "",
+        hot: false,
+        image: "",
+      });
+      handleResetImage("");
+      setSelectCategory({});
+    } catch (error) {
+      console.log("error: ", error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     async function getData() {
       const conRef = collection(db, "categories");
@@ -92,6 +107,10 @@ const PostAddNew = () => {
     setValue("categoryId", item.id);
     setSelectCategory(item);
   };
+
+  useEffect(() => {
+    document.title = "Monkey Blogging - Add new post";
+  }, []);
   return (
     <PostAddNewStyles>
       <h1 className="dashboard-heading">Add new post</h1>
@@ -186,13 +205,6 @@ const PostAddNew = () => {
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>
             <Label>Feature post</Label>
-            {/* <Dropdown>
-              <Dropdown.Option>Knowledge</Dropdown.Option>
-              <Dropdown.Option>Blockchain</Dropdown.Option>
-              <Dropdown.Option>Setup</Dropdown.Option>
-              <Dropdown.Option>Nature</Dropdown.Option>
-              <Dropdown.Option>Developer</Dropdown.Option>
-            </Dropdown> */}
             <Toggle
               on={watchHot === true}
               onClick={() => {
@@ -202,7 +214,13 @@ const PostAddNew = () => {
           </Field>
           <Field></Field>
         </div>
-        <Button kind="primary" type="submit" className="mx-auto">
+        <Button
+          kind="primary"
+          type="submit"
+          className="mx-auto w-[200px] "
+          isLoading={loading}
+          disabled={loading}
+        >
           Add new post
         </Button>
       </form>
