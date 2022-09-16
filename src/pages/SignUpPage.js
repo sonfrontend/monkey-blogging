@@ -12,9 +12,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase-app/firebase-config";
 import { NavLink, useNavigate } from "react-router-dom";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 import AuthenticationPage from "./AuthenticationPage";
 import InputPasswordToggle from "../components/input/InputPasswordToggle";
+import slugify from "slugify";
 
 const schema = yup.object({
   fullName: yup.string().required("Please enter your fullname"),
@@ -58,12 +59,19 @@ const SignUpPage = () => {
         displayName: values.fullName,
       });
 
-      const colRef = collection(db, "user");
-      await addDoc(colRef, {
+      const colRef = collection(db, "users");
+
+      await setDoc(doc(db, "users", auth.currentUser.uid), {
         fullName: values.fullName,
         email: values.email,
         password: values.password,
+        userName: slugify(values.fullName, { lower: true }),
       });
+      // await addDoc(colRef, {
+      //   fullName: values.fullName,
+      //   email: values.email,
+      //   password: values.password,
+      // });
       toast.success("Register successfully!!!");
       navigate("/");
     }

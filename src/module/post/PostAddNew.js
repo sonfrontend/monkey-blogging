@@ -12,7 +12,14 @@ import { postStatus } from "../../utils/constants";
 import ImageUpload from "../../components/image/ImageUpload";
 import useFirebaseImage from "../../hook/useFirebaseImage";
 import { Toggle } from "../../components/toggle";
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  serverTimestamp,
+  where,
+} from "firebase/firestore";
 import { db } from "../../firebase-app/firebase-config";
 import { useAuth } from "../../contexts/authContext";
 import { toast } from "react-toastify";
@@ -47,6 +54,7 @@ const PostAddNew = () => {
       ...cloneValues,
       image,
       userId: userInfo.uid,
+      createdAt: serverTimestamp,
     });
     toast.success("Creacte new post successfully");
     reset({
