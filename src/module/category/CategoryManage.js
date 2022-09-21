@@ -14,8 +14,10 @@ import DashboardHeading from "../../drafts/DashboardHeading";
 import { db } from "../../firebase-app/firebase-config";
 import { categoryStatus } from "../../utils/constants";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 const CategoryManage = () => {
   const [categoryList, setCategoryList] = useState([]);
+  const navigate = useNavigate();
   useEffect(() => {
     const colRef = collection(db, "categories");
     onSnapshot(colRef, (snapshot) => {
@@ -48,6 +50,7 @@ const CategoryManage = () => {
     });
     // const docData = await getDoc(colRef);
   };
+
   return (
     <div>
       <DashboardHeading title="Categories" desc="Manage your category">
@@ -85,7 +88,11 @@ const CategoryManage = () => {
                 <td>
                   <div className="flex item-center gap-x-3">
                     <ActionView></ActionView>
-                    <ActionEdit></ActionEdit>
+                    <ActionEdit
+                      onClick={() => {
+                        navigate(`/manage/update-category?id=${category.id}`);
+                      }}
+                    ></ActionEdit>
                     <ActionDelete
                       onClick={() => {
                         handleDeleteCategory(category.id);

@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/authContext";
 import CategoryAddNew from "./module/category/CategoryAddNew";
 import CategoryManage from "./module/category/CategoryManage";
+import CategoryUpdate from "./module/category/CategoryUpdate";
 import DashboardLayout from "./module/dashbroad/DashbroadLayout";
 import PostAddNew from "./module/post/PostAddNew";
 import PostDetailsPage from "./module/post/PostDetailsPage";
@@ -49,8 +50,9 @@ function App() {
             ></Route>
             <Route
               path="/manage/update-category"
-              element={<CategoryManage></CategoryManage>}
+              element={<CategoryUpdate></CategoryUpdate>}
             ></Route>
+
             {/* <Route
             path="/manage/user"
             element={<UserManage></UserManage>}
