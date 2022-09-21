@@ -197,10 +197,10 @@ const PostAddNew = () => {
               </Radio>
             </div>
           </Field>
-          <Field>
+          {/* <Field>
             <Label>Author</Label>
             <Input control={control} placeholder="Find the author"></Input>
-          </Field>
+          </Field> */}
         </div>
         <div className="grid grid-cols-2 gap-x-10 mb-10">
           <Field>

@@ -1,5 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/authContext";
+import CategoryAddNew from "./module/category/CategoryAddNew";
+import CategoryManage from "./module/category/CategoryManage";
 import DashboardLayout from "./module/dashbroad/DashbroadLayout";
 import PostAddNew from "./module/post/PostAddNew";
 import PostDetailsPage from "./module/post/PostDetailsPage";
@@ -30,13 +32,37 @@ function App() {
               element={<DashboardPage></DashboardPage>}
             ></Route>
             <Route
-              path="/manage/post"
+              path="/manage/posts"
               element={<PostManage></PostManage>}
             ></Route>
             <Route
               path="/manage/add-post"
               element={<PostAddNew></PostAddNew>}
             ></Route>
+            <Route
+              path="/manage/category"
+              element={<CategoryManage></CategoryManage>}
+            ></Route>
+            <Route
+              path="/manage/add-category"
+              element={<CategoryAddNew></CategoryAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-category"
+              element={<CategoryManage></CategoryManage>}
+            ></Route>
+            {/* <Route
+            path="/manage/user"
+            element={<UserManage></UserManage>}
+          ></Route>
+          <Route
+            path="/manage/add-user"
+            element={<UserAddNew></UserAddNew>}
+          ></Route>
+          <Route
+            path="/profile"
+            element={<UserProfile></UserProfile>}
+          ></Route> */}
           </Route>
         </Routes>
       </AuthProvider>
