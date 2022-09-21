@@ -139,10 +139,6 @@ const sidebarLinks = [
 const Sidebar = () => {
   return (
     <SidebarStyles className="sidebar">
-      <div className="sidebar-logo">
-        <img srcSet="/logo.png 2x" alt="" />
-        <span>Monkey Blogging</span>
-      </div>
       {sidebarLinks.map((link) => (
         <NavLink to={link.url} className="menu-item" key={link.title}>
           <span className="menu-icon">{link.icon}</span>

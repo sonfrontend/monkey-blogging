@@ -58,6 +58,15 @@ const CategoryManage = () => {
           Create category
         </Button>
       </DashboardHeading>
+      <div className="mb-10 flex justify-end">
+        <input
+          type="text"
+          name=""
+          id=""
+          placeholder="Search category..."
+          className="py-4 px-5 border border-gray-300 rounded-lg"
+        />
+      </div>
       <Table>
         <thead>
           <tr>
