@@ -3,7 +3,10 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  limit,
   onSnapshot,
+  query,
+  where,
 } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
@@ -15,13 +18,25 @@ import { db } from "../../firebase-app/firebase-config";
 import { categoryStatus } from "../../utils/constants";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import { debounce } from "lodash";
 const CategoryManage = () => {
   const [categoryList, setCategoryList] = useState([]);
   const navigate = useNavigate();
+  const [filter, setFilter] = useState("");
+  const [categoryCount, setCategoryCount] = useState();
   useEffect(() => {
     const colRef = collection(db, "categories");
-    onSnapshot(colRef, (snapshot) => {
+    const newRef = filter
+      ? query(
+          colRef,
+          where("name", ">=", filter),
+          where("name", "<=", filter + "utf8")
+        )
+      : query(colRef, limit(1));
+    onSnapshot(newRef, (snapshot) => {
       let result = [];
+      console.log("snapshot size: ", snapshot.size);
+      setCategoryCount(Number(snapshot.size));
       snapshot.forEach((doc) => {
         result.push({
           id: doc.id,
@@ -30,7 +45,7 @@ const CategoryManage = () => {
       });
       setCategoryList(result);
     });
-  }, []);
+  }, [filter]);
   const handleDeleteCategory = async (docId) => {
     const colRef = doc(db, "categories", docId);
 
@@ -51,6 +66,10 @@ const CategoryManage = () => {
     // const docData = await getDoc(colRef);
   };
 
+  const handleInputFilter = debounce((e) => {
+    setFilter(e.target.value);
+  }, 500);
+
   return (
     <div>
       <DashboardHeading title="Categories" desc="Manage your category">
@@ -65,6 +84,7 @@ const CategoryManage = () => {
           id=""
           placeholder="Search category..."
           className="py-4 px-5 border border-gray-300 rounded-lg"
+          onChange={handleInputFilter}
         />
       </div>
       <Table>
