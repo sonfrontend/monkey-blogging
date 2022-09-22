@@ -12,10 +12,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase-app/firebase-config";
 import { NavLink, useNavigate } from "react-router-dom";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import AuthenticationPage from "./AuthenticationPage";
 import InputPasswordToggle from "../components/input/InputPasswordToggle";
 import slugify from "slugify";
+import { userRole, userStatus } from "../utils/constants";
 
 const schema = yup.object({
   fullName: yup.string().required("Please enter your fullname"),
@@ -57,6 +64,8 @@ const SignUpPage = () => {
 
       await updateProfile(auth.currentUser, {
         displayName: values.fullName,
+        photoURL:
+          "https://images.unsplash.com/photo-1503135935062-b7d1f5a0690f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
       });
 
       const colRef = collection(db, "users");
@@ -66,6 +75,11 @@ const SignUpPage = () => {
         email: values.email,
         password: values.password,
         userName: slugify(values.fullName, { lower: true }),
+        avatar:
+          "https://images.unsplash.com/photo-1503135935062-b7d1f5a0690f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80",
+        status: userStatus.ACTIVE,
+        role: userRole.USER,
+        createdAt: serverTimestamp(),
       });
       // await addDoc(colRef, {
       //   fullName: values.fullName,
