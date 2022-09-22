@@ -7,7 +7,9 @@ import DashboardLayout from "./module/dashbroad/DashbroadLayout";
 import PostAddNew from "./module/post/PostAddNew";
 import PostDetailsPage from "./module/post/PostDetailsPage";
 import PostManage from "./module/post/PostManage";
+import UserAddNew from "./module/user/UserAddNew";
 import UserManage from "./module/user/UserManage";
+import UserProfile from "./module/user/UserProfile";
 import DashboardPage from "./pages/DashbroadPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -58,14 +60,14 @@ function App() {
               path="/manage/user"
               element={<UserManage></UserManage>}
             ></Route>
-            {/* <Route
-            path="/manage/add-user"
-            element={<UserAddNew></UserAddNew>}
-          ></Route>
-          <Route
-            path="/profile"
-            element={<UserProfile></UserProfile>}
-          ></Route> */}
+            <Route
+              path="/manage/add-user"
+              element={<UserAddNew></UserAddNew>}
+            ></Route>
+            <Route
+              path="/profile"
+              element={<UserProfile></UserProfile>}
+            ></Route>
           </Route>
         </Routes>
       </AuthProvider>
