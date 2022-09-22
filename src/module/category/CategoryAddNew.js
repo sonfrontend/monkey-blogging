@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import React from "react";
 import { useForm } from "react-hook-form";

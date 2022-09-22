@@ -15,12 +15,12 @@ import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
 import { Button } from "../../components/button";
 import { LabelStatus } from "../../components/label";
 import { Table } from "../../components/table";
-import DashboardHeading from "../../drafts/DashboardHeading";
 import { db } from "../../firebase-app/firebase-config";
 import { categoryStatus } from "../../utils/constants";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { debounce } from "lodash";
+import DashboardHeading from "../dashbroad/DashboardHeading";
 const CategoryManage = () => {
   const CATEGORY_PER_PAGE = 10;
   const [categoryList, setCategoryList] = useState([]);

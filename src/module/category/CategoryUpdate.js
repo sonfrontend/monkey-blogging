@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -10,9 +9,9 @@ import { Radio } from "../../components/checkbox";
 import { Field, FieldCheckboxes } from "../../components/field";
 import { Input } from "../../components/input";
 import { Label } from "../../components/label";
-import DashboardHeading from "../../drafts/DashboardHeading";
 import { db } from "../../firebase-app/firebase-config";
 import { categoryStatus } from "../../utils/constants";
+import DashboardHeading from "../dashbroad/DashboardHeading";
 
 const CategoryUpdate = () => {
   const {
