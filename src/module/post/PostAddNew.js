@@ -15,6 +15,8 @@ import { Toggle } from "../../components/toggle";
 import {
   addDoc,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -32,9 +34,10 @@ const PostAddNew = () => {
       title: "",
       slug: "",
       status: 1,
-      categoryId: "",
       hot: false,
       image: "",
+      category: {},
+      user: {},
     },
   });
 
@@ -53,6 +56,24 @@ const PostAddNew = () => {
   const [categories, setCategories] = useState([]);
   const [selectCategory, setSelectCategory] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!userInfo.uid) return;
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", userInfo.email)
+      );
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        setValue("user", {
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+    }
+    fetchUserData();
+  }, [userInfo.email, setValue, userInfo.uid]);
   const addPostHandler = async (values) => {
     setLoading(true);
     try {
@@ -72,9 +93,10 @@ const PostAddNew = () => {
         title: "",
         slug: "",
         status: 1,
-        categoryId: "",
         hot: false,
         image: "",
+        category: {},
+        user: {},
       });
       handleResetImage("");
       setSelectCategory({});
@@ -88,7 +110,7 @@ const PostAddNew = () => {
   useEffect(() => {
     async function getData() {
       const conRef = collection(db, "categories");
-      const p = query(conRef, where("status", "==", 1));
+      const p = query(conRef, where("status", ">=", 1));
       const querySnapshot = await getDocs(p);
       let result = [];
       querySnapshot.forEach((doc) => {
@@ -103,8 +125,13 @@ const PostAddNew = () => {
     getData();
   }, []);
 
-  const handleClickOption = (item) => {
-    setValue("categoryId", item.id);
+  const handleClickOption = async (item) => {
+    const colRef = doc(db, "categories", item.id);
+    const docData = await getDoc(colRef);
+    setValue("category", {
+      id: docData.id,
+      ...docData.data(),
+    });
     setSelectCategory(item);
   };
 
