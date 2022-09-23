@@ -6,6 +6,7 @@ import PostTitle from "./PostTitle";
 import React from "react";
 import slugify from "slugify";
 import styled from "styled-components";
+
 const PostFeatureItemStyles = styled.div`
   width: 100%;
   border-radius: 16px;

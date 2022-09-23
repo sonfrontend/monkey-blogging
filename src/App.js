@@ -13,6 +13,7 @@ import UserUpdate from "./module/user/UserUpdate";
 import DashboardPage from "./pages/DashbroadPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
+import PostDetailsPage from "./pages/PostDetailsPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 
@@ -26,10 +27,10 @@ function App() {
           <Route path="/sign-in" element={<SignInPage></SignInPage>}></Route>
 
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
-          {/* <Route
+          <Route
             path="/:slug"
             element={<PostDetailsPage></PostDetailsPage>}
-          ></Route> */}
+          ></Route>
           <Route element={<DashboardLayout></DashboardLayout>}>
             <Route
               path="/dashboard"
@@ -55,7 +56,6 @@ function App() {
               path="/manage/update-category"
               element={<CategoryUpdate></CategoryUpdate>}
             ></Route>
-
             <Route
               path="/manage/user"
               element={<UserManage></UserManage>}
