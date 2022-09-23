@@ -109,7 +109,7 @@ const UserTable = () => {
           <div className="flex item-center gap-x-3">
             <ActionEdit
               onClick={() => {
-                navigate(`/manage/update-category?id=${user.id}`);
+                navigate(`/manage/update-user?id=${user.id}`);
               }}
             ></ActionEdit>
             <ActionDelete

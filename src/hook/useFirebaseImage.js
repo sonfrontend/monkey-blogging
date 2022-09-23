@@ -8,7 +8,12 @@ import {
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function useFirebaseImage(setValue, getValues) {
+export default function useFirebaseImage(
+  setValue,
+  getValues,
+  imageName = null,
+  cb = null
+) {
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState("");
   const handleUploadImage = (file) => {
@@ -55,7 +60,10 @@ export default function useFirebaseImage(setValue, getValues) {
     const storage = getStorage();
 
     // Create a reference to the file to delete
-    const desertRef = ref(storage, "images/" + getValues("image_name"));
+    const desertRef = ref(
+      storage,
+      "images/" + (imageName || getValues("image_name"))
+    );
 
     // Delete the file
     deleteObject(desertRef)
@@ -63,6 +71,7 @@ export default function useFirebaseImage(setValue, getValues) {
         console.log("Remove image successfully");
         setImage("");
         setProgress(0);
+        cb && cb();
       })
       .catch((error) => {
         console.log("Can not delete image");
@@ -75,6 +84,7 @@ export default function useFirebaseImage(setValue, getValues) {
   };
   return {
     image,
+    setImage,
     handleResetImage,
     progress,
     handleSelectImage,

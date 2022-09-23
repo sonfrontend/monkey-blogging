@@ -5,11 +5,11 @@ import CategoryManage from "./module/category/CategoryManage";
 import CategoryUpdate from "./module/category/CategoryUpdate";
 import DashboardLayout from "./module/dashbroad/DashbroadLayout";
 import PostAddNew from "./module/post/PostAddNew";
-import PostDetailsPage from "./module/post/PostDetailsPage";
 import PostManage from "./module/post/PostManage";
 import UserAddNew from "./module/user/UserAddNew";
 import UserManage from "./module/user/UserManage";
 import UserProfile from "./module/user/UserProfile";
+import UserUpdate from "./module/user/UserUpdate";
 import DashboardPage from "./pages/DashbroadPage";
 import HomePage from "./pages/HomePage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -26,10 +26,10 @@ function App() {
           <Route path="/sign-in" element={<SignInPage></SignInPage>}></Route>
 
           <Route path="*" element={<NotFoundPage></NotFoundPage>}></Route>
-          <Route
+          {/* <Route
             path="/:slug"
             element={<PostDetailsPage></PostDetailsPage>}
-          ></Route>
+          ></Route> */}
           <Route element={<DashboardLayout></DashboardLayout>}>
             <Route
               path="/dashboard"
@@ -63,6 +63,10 @@ function App() {
             <Route
               path="/manage/add-user"
               element={<UserAddNew></UserAddNew>}
+            ></Route>
+            <Route
+              path="/manage/update-user"
+              element={<UserUpdate></UserUpdate>}
             ></Route>
             <Route
               path="/profile"
