@@ -1,13 +1,19 @@
+import { async } from "@firebase/util";
 import {
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   limit,
   onSnapshot,
   query,
+  startAfter,
   where,
 } from "firebase/firestore";
+import { debounce } from "lodash";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
 import { Button } from "../../components/button";
 import { Dropdown } from "../../components/dropdown";
@@ -24,6 +30,7 @@ const PostManage = () => {
   console.log("postList: ", postList);
   const [filter, setFilter] = useState("");
   const [lastDoc, setLastDoc] = useState();
+  const [total, setTotal] = useState(0);
   const navigate = useNavigate();
   useEffect(() => {
     async function fetchData() {
@@ -31,14 +38,16 @@ const PostManage = () => {
       const newRef = filter
         ? query(
             colRef,
-            where("name", ">=", filter),
-            where("name", "<=", filter + "utf8")
+            where("title", ">=", filter),
+            where("title", "<=", filter + "utf8")
           )
         : query(colRef, limit(POST_PER_PAGE));
       const documentSnapshots = await getDocs(newRef);
       const lastVisible =
         documentSnapshots.docs[documentSnapshots.docs.length - 1];
-
+      onSnapshot(colRef, (snapshot) => {
+        setTotal(snapshot.size);
+      });
       onSnapshot(newRef, (snapshot) => {
         let result = [];
         snapshot.forEach((doc) => {
@@ -54,7 +63,52 @@ const PostManage = () => {
     fetchData();
   }, [filter]);
 
-  const handleDeletePost = () => {};
+  const handleDeletePost = async (post) => {
+    const colRef = doc(db, "posts", post.id);
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(colRef);
+        // Swal.fire("Deleted!", "Your file has been deleted.", "success");
+      }
+    });
+    // const docData = await getDoc(colRef);
+  };
+
+  const handleInputFilter = debounce((e) => {
+    setFilter(e.target.value);
+  }, 500);
+
+  const handleLoadMorePost = async () => {
+    const nextRef = query(
+      collection(db, "posts"),
+      startAfter(lastDoc || 0),
+      limit(POST_PER_PAGE)
+    );
+    onSnapshot(nextRef, (snapshot) => {
+      let result = [];
+      snapshot.forEach((doc) => {
+        result.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      setPostList([...postList, ...result]);
+    });
+
+    const documentSnapshots = await getDocs(nextRef);
+    const lastVisible =
+      documentSnapshots.docs[documentSnapshots.docs.length - 1];
+    setLastDoc(lastVisible);
+  };
   return (
     <div>
       <DashboardHeading
@@ -62,16 +116,12 @@ const PostManage = () => {
         desc="Manage all post"
       ></DashboardHeading>
       <div className="flex justify-end gap-5 md-10">
-        <div className="w-full max-w-[200px]">
-          <Dropdown>
-            <Dropdown.Select placeholder="Category"></Dropdown.Select>
-          </Dropdown>
-        </div>
         <div className="w-full max-w-[300px]">
           <input
             type="text"
             className="w-full p-4 border border-gray-300 border-solid rounded-lg"
             placeholder="Search post..."
+            onChange={handleInputFilter}
           />
         </div>
       </div>
@@ -122,7 +172,7 @@ const PostManage = () => {
                       ></ActionView>
                       <ActionEdit
                         onClick={() => {
-                          navigate(`/manage/update-user?id=${post.id}`);
+                          navigate(`/manage/update-post?id=${post.id}`);
                         }}
                       ></ActionEdit>
                       <ActionDelete
@@ -137,11 +187,17 @@ const PostManage = () => {
             })}
         </tbody>
       </Table>
-      <div className="mt-10 text-center">
-        <Button className="mx-auto w-[200px]" kind="primary">
-          Load more
-        </Button>
-      </div>
+      {total > postList.length && (
+        <div className="mt-10 text-center">
+          <Button
+            className="mx-auto w-[200px]"
+            kind="primary"
+            onClick={handleLoadMorePost}
+          >
+            Load more
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
