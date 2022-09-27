@@ -13,6 +13,7 @@ import PostImage from "../module/post/PostImage";
 import Layout from "../components/layout/Layout";
 import { userRole } from "../utils/constants";
 import AuthorBox from "../components/author/AuthorBox";
+import PostRelated from "../module/post/PostRelated";
 
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
@@ -120,9 +121,8 @@ const PostDetailsPage = () => {
     fetchData();
   }, [slug]);
   const { user } = postInfo;
-  console.log("postInfo: ", postInfo);
-  console.log("userInfo: ", user);
-  if (!slug || !postInfo.title) return <NotFoundPage></NotFoundPage>;
+  if (!slug) return <NotFoundPage></NotFoundPage>;
+  if (!postInfo.title) return null;
   return (
     <PostDetailsPageStyles>
       <Layout>
@@ -144,6 +144,7 @@ const PostDetailsPage = () => {
             <div className="entry-content">{parse(postInfo?.content)}</div>
             <AuthorBox userId={user?.id} image={postInfo?.image}></AuthorBox>
           </div>
+          <PostRelated categoryId={postInfo?.categoryId}></PostRelated>
         </div>
       </Layout>
     </PostDetailsPageStyles>

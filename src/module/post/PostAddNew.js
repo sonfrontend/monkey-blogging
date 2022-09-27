@@ -85,6 +85,7 @@ const PostAddNew = () => {
       const colRef = collection(db, "posts");
       await addDoc(colRef, {
         ...cloneValues,
+        categoryId: cloneValues.category.id,
         image,
         userId: userInfo.uid,
         createdAt: serverTimestamp(),
