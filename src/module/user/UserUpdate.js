@@ -14,6 +14,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase-app/firebase-config";
 import { async } from "@firebase/util";
 import { toast } from "react-toastify";
+import { TextArea } from "../../components/textarea";
 const UserUpdate = () => {
   const {
     handleSubmit,
@@ -200,6 +201,12 @@ const UserUpdate = () => {
                 User
               </Radio>
             </FieldCheckboxes>
+          </Field>
+        </div>
+        <div className="form-layout">
+          <Field>
+            <Label>Description</Label>
+            <TextArea name="description" control={control}></TextArea>
           </Field>
         </div>
         <Button

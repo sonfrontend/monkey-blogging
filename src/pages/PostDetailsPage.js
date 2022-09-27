@@ -12,6 +12,7 @@ import PostMeta from "../module/post/PostMeta";
 import PostImage from "../module/post/PostImage";
 import Layout from "../components/layout/Layout";
 import { userRole } from "../utils/constants";
+import AuthorBox from "../components/author/AuthorBox";
 
 const PostDetailsPageStyles = styled.div`
   padding-bottom: 100px;
@@ -118,7 +119,9 @@ const PostDetailsPage = () => {
     }
     fetchData();
   }, [slug]);
-  const { userInfo } = postInfo;
+  const { user } = postInfo;
+  console.log("postInfo: ", postInfo);
+  console.log("userInfo: ", user);
   if (!slug || !postInfo.title) return <NotFoundPage></NotFoundPage>;
   return (
     <PostDetailsPageStyles>
@@ -135,19 +138,11 @@ const PostDetailsPage = () => {
               </PostCategory>
               <h1 className="post-heading">{postInfo.title}</h1>
               <PostMeta></PostMeta>
-              {/* Check if user role is ADMIN then can edit the post */}
-              {userInfo?.role === userRole.ADMIN && (
-                <Link
-                  to={`/manage/update-post?id=${postInfo.id}`}
-                  className="inline-block px-4 py-2 mt-5 text-sm border border-gray-400 rounded-md"
-                >
-                  Edit post
-                </Link>
-              )}
             </div>
           </div>
           <div className="post-content">
             <div className="entry-content">{parse(postInfo?.content)}</div>
+            <AuthorBox userId={user?.id} image={postInfo?.image}></AuthorBox>
           </div>
         </div>
       </Layout>
