@@ -2,7 +2,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { db } from "../firebase-app/firebase-config";
 import NotFoundPage from "./NotFoundPage";
@@ -11,7 +11,6 @@ import PostCategory from "../module/post/PostCategory";
 import PostMeta from "../module/post/PostMeta";
 import PostImage from "../module/post/PostImage";
 import Layout from "../components/layout/Layout";
-import { userRole } from "../utils/constants";
 import AuthorBox from "../components/author/AuthorBox";
 import PostRelated from "../module/post/PostRelated";
 
@@ -118,9 +117,16 @@ const PostDetailsPage = () => {
         });
       });
     }
-    fetchData();
+    try {
+      fetchData();
+    } catch (error) {
+      console.log("error: ", error);
+    }
   }, [slug]);
   const { user } = postInfo;
+  useEffect(() => {
+    document.body.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [slug]);
   if (!slug) return <NotFoundPage></NotFoundPage>;
   if (!postInfo.title) return null;
   return (
@@ -141,7 +147,9 @@ const PostDetailsPage = () => {
             </div>
           </div>
           <div className="post-content">
-            <div className="entry-content">{parse(postInfo?.content)}</div>
+            <div className="entry-content">
+              {parse(postInfo?.content || "")}
+            </div>
             <AuthorBox userId={user?.id} image={postInfo?.image}></AuthorBox>
           </div>
           <PostRelated categoryId={postInfo?.categoryId}></PostRelated>

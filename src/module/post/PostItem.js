@@ -1,6 +1,7 @@
 import React from "react";
 import slugify from "slugify";
 import styled from "styled-components";
+import PostCategory from "./PostCategory";
 import PostImage from "./PostImage";
 import PostMeta from "./PostMeta";
 import PostTitle from "./PostTitle";
@@ -41,11 +42,12 @@ const PostItem = ({ data }) => {
   return (
     <PostItemStyles>
       <PostImage to="/" url={data.image} alt=""></PostImage>
-
-      <div className="post-category">{data.category?.name}</div>
+      <PostCategory to={data.category?.slug}>
+        {data.category?.name}
+      </PostCategory>
       <PostTitle to={data.slug}>{data.title}</PostTitle>
       <PostMeta
-        to={slugify(data?.user?.fullName || "", { lower: true })}
+        to={slugify(data?.user?.userName || "", { lower: true })}
         authorName={data?.user.fullName}
         date={formatDate}
       ></PostMeta>

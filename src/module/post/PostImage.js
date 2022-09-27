@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 const PostImageStyles = styled.div`
@@ -7,18 +7,18 @@ const PostImageStyles = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: inherit;
+    border-radius: 10px;
   }
 `;
 
-const PostImage = ({ className = "", url = "", alt = "", to = null }) => {
+const PostImage = ({ className = "", url = "", alt = "", to = "" }) => {
   if (to)
     return (
-      <NavLink to={to} style={{ display: "block" }}>
+      <Link to={`/${to}`} style={{ display: "block" }}>
         <PostImageStyles className={`post-image ${className}`}>
           <img src={url} alt={alt} loading="lazy" />
         </PostImageStyles>
-      </NavLink>
+      </Link>
     );
   return (
     <PostImageStyles className={`post-image ${className}`}>
