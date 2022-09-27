@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import {
   collection,
   deleteDoc,
@@ -16,11 +15,11 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
 import { Button } from "../../components/button";
-import { Dropdown } from "../../components/dropdown";
-import { LabelStatus } from "../../components/label";
-import { Pagination } from "../../components/pagination";
+import { Label } from "../../components/label";
 import { Table } from "../../components/table";
+import { useAuth } from "../../contexts/authContext";
 import { db } from "../../firebase-app/firebase-config";
+import { userRole } from "../../utils/constants";
 import DashboardHeading from "../dashbroad/DashboardHeading";
 
 const POST_PER_PAGE = 1;
@@ -109,6 +108,9 @@ const PostManage = () => {
       documentSnapshots.docs[documentSnapshots.docs.length - 1];
     setLastDoc(lastVisible);
   };
+  const { useInfo } = useAuth();
+  if (useInfo?.role !== userRole.ADMIN)
+    return <Label>You must be an admin!</Label>;
   return (
     <div>
       <DashboardHeading

@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { useAuth } from "../../contexts/authContext";
 import { Button } from "../button";
+import logo from "./logo.png";
 const HeaderLink = [
   {
     url: "/",
@@ -80,7 +81,7 @@ const Header = () => {
       <div className="container">
         <div className="header-main">
           <NavLink to="/">
-            <img src="./logo.png" alt="monkey-blogging" className="logo" />
+            <img src={logo} alt="monkey-blogging" className="logo" />
           </NavLink>
           <ul className="menu">
             {HeaderLink.map((item) => (
