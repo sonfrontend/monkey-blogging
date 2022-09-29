@@ -5,7 +5,9 @@ import { db } from "../../firebase-app/firebase-config";
 import PostItem from "./PostItem";
 
 const PostRelated = ({ categoryId = "" }) => {
+  console.log("categoryId: ", categoryId);
   const [posts, setPosts] = useState([]);
+  console.log("posts: ", posts);
   useEffect(() => {
     const docRef = query(
       collection(db, "posts"),
@@ -21,7 +23,7 @@ const PostRelated = ({ categoryId = "" }) => {
       });
       setPosts(result);
     });
-  }, [posts, categoryId]);
+  }, [categoryId]);
   if (!categoryId || posts.length <= 0) return null;
   return (
     <div className="post-related">

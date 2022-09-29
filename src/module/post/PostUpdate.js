@@ -28,6 +28,7 @@ import ReactQuill, { Quill } from "react-quill";
 import ImageUploader from "quill-image-uploader";
 import { useMemo } from "react";
 import axios from "axios";
+import slugify from "slugify";
 Quill.register("modules/imageUploader", ImageUploader);
 
 const PostUpdate = () => {
@@ -127,8 +128,11 @@ const PostUpdate = () => {
 
   const handleUpdatePost = async (values) => {
     const docRef = doc(db, "posts", postId);
+    values.status = Number(values.status);
+    values.slug = slugify(values.slug || values.title, { lower: true });
     await updateDoc(docRef, {
       ...values,
+      image,
       content,
     });
     toast.success("Update post successfully!");

@@ -15,11 +15,11 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { ActionDelete, ActionEdit, ActionView } from "../../components/action";
 import { Button } from "../../components/button";
-import { Label } from "../../components/label";
+import { Label, LabelStatus } from "../../components/label";
 import { Table } from "../../components/table";
 import { useAuth } from "../../contexts/authContext";
 import { db } from "../../firebase-app/firebase-config";
-import { userRole } from "../../utils/constants";
+import { userRole, userStatus } from "../../utils/constants";
 import DashboardHeading from "../dashbroad/DashboardHeading";
 
 const POST_PER_PAGE = 1;
@@ -108,8 +108,24 @@ const PostManage = () => {
       documentSnapshots.docs[documentSnapshots.docs.length - 1];
     setLastDoc(lastVisible);
   };
-  const { useInfo } = useAuth();
-  if (useInfo?.role !== userRole.ADMIN)
+
+  const renderLabelStatus = (status) => {
+    switch (status) {
+      case userStatus.ACTIVE:
+        return <LabelStatus type="success">APPROVED</LabelStatus>;
+        break;
+      case userStatus.PENDING:
+        return <LabelStatus type="warning">PENDING</LabelStatus>;
+        break;
+      case userStatus.BAN:
+        return <LabelStatus type="danger">REJECTED</LabelStatus>;
+        break;
+      default:
+        break;
+    }
+  };
+  const { userInfo } = useAuth();
+  if (userInfo?.role === userRole.ADMIN)
     return <Label>You must be an admin!</Label>;
   return (
     <div>
@@ -134,6 +150,7 @@ const PostManage = () => {
             <th>Post</th>
             <th>Category</th>
             <th>Author</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -166,7 +183,7 @@ const PostManage = () => {
                   </td>
                   <td>{post?.category?.name}</td>
                   <td>{post?.user.fullName}</td>
-
+                  <td>{renderLabelStatus(Number(post?.user?.status))}</td>
                   <td>
                     <div className="flex item-center gap-x-3">
                       <ActionView

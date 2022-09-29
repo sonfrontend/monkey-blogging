@@ -1,9 +1,18 @@
 import PostItem from "../../module/post/PostItem";
 import PostNewestItem from "../../module/post/PostNewestItem";
 import PostNewestLarge from "../../module/post/PostNewestLarge";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Heading from "../../components/layout/Heading";
+import { v4 } from "uuid";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../../firebase-app/firebase-config";
 
 const HomeNewestStyles = styled.div`
   .layout {
@@ -21,17 +30,51 @@ const HomeNewestStyles = styled.div`
 `;
 
 const HomeNewest = () => {
+  const [posts, setPosts] = useState([]);
+  console.log("posts: ", posts);
+  useEffect(() => {
+    const colRef = collection(db, "posts");
+    const q = query(
+      colRef,
+      where("status", "==", 1),
+      where("hot", "==", false),
+      limit(4)
+    );
+    onSnapshot(
+      q,
+      (snapshot) => {
+        const result = [];
+        snapshot.forEach((doc) => {
+          result.push({
+            id: doc.id,
+            ...doc.data(),
+          });
+        });
+        setPosts(result);
+      },
+      (error) => {
+        console.log("error: ", error);
+        // ...
+      }
+    );
+  }, []);
+  if (posts?.length <= 0) return null;
+  const [first, ...other] = posts;
+  console.log("other: ", other);
   return (
     <HomeNewestStyles className="home-block">
       <div className="container">
         <Heading>Mới nhất</Heading>
         <div className="layout">
-          <PostNewestLarge></PostNewestLarge>
-          <div className="sidebar">
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
-            <PostNewestItem></PostNewestItem>
-          </div>
+          <PostNewestLarge data={first}></PostNewestLarge>
+          {other.length > 0 && (
+            <div className="sidebar">
+              {other.length > 0 &&
+                other.map((item) => (
+                  <PostNewestItem key={v4()} data={item}></PostNewestItem>
+                ))}
+            </div>
+          )}
         </div>
         <div className="grid-layout grid-layout--primary">
           <PostItem></PostItem>
